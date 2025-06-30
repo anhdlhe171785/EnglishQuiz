@@ -1,0 +1,67 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using PRN222_EnglishQuiz.Models
+
+
+<h2>Bắt đầu làm bài: @ViewBag.Exam.Title</h2>
+<p>@ViewBag.Exam.Description</p>
+<p>Thời gian làm bài: @ViewBag.TimeLimitMinutes phút</p>
+
+<form method="post" asp-action="SubmitExam" asp-controller="Exam">
+    @for (int i = 0; i < ViewBag.Questions.Count; i++)
+    {
+        var q = ViewBag.Questions[i];
+        <div>
+            <p><strong>@(i + 1).</strong> @q.Content</p>
+            <input type="radio" name="answers[@q.Id]" value="A" /> @q.OptionA<br />
+            <input type="radio" name="answers[@q.Id]" value="B" /> @q.OptionB<br />
+            <input type="radio" name="answers[@q.Id]" value="C" /> @q.OptionC<br />
+            <input type="radio" name="answers[@q.Id]" value="D" /> @q.OptionD<br />
+        </div>
+        <input type="hidden" name="questionIds" value="@q.Id" />
+        <hr />
+    }
+
+    <input type="hidden" name="examId" value="@ViewBag.Exam.Id" />
+    <button type="submit">Submit</button>
+</form>
+<div id="countdown-popup"
+     style="position: fixed; top: 20px; right: 20px; background-color: rgba(0,0,0,0.85); color: white;
+            padding: 12px 20px; border-radius: 10px; z-index: 9999; font-size: 16px; font-weight: bold;">
+    ⏰ Đang tính thời gian...
+</div>
+@section Scripts {
+    <script>
+        let timeLeft = @ViewBag.TimeLimitMinutes * 60;
+        const countdownPopup = document.getElementById("countdown-popup");
+
+        const timer = setInterval(function () {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            countdownPopup.innerText = `⏳ Còn lại: ${minutes} phút ${seconds < 10 ? '0' : ''}${seconds} giây`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                countdownPopup.innerText = "🛑 Hết giờ!";
+                setTimeout(() => {
+                    alert("⏰ Hết giờ! Bài sẽ được tự động nộp.");
+                    document.querySelector("form").submit();
+                }, 1000);
+            }
+
+            timeLeft--;
+        }, 1000);
+
+        // 🚫 Chặn nút quay lại (Back)
+        history.pushState(null, "", location.href);
+        window.onpopstate = function () {
+            history.go(1); // Tự tiến lại nếu user bấm back
+        };
+                // Cảnh báo khi người dùng cố gắng rời trang làm bài
+        window.onbeforeunload = function () {
+            return "Bạn có chắc muốn rời trang? Bài làm của bạn sẽ bị mất.";
+        };
+
+    </script>
+}
+
+

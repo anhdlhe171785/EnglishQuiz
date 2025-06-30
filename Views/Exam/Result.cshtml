@@ -1,0 +1,94 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using PRN222_EnglishQuiz.Models
+
+@{
+    ViewData["Title"] = "Kết quả bài thi";
+    var questions = ViewBag.Questions as List<Question>;
+    var form = ViewBag.UserAnswers as IFormCollection;
+    int total = ViewBag.Total;
+    int correct = ViewBag.Correct;
+    double score = ViewBag.Score;
+}
+
+<h2>Kết quả bài thi</h2>
+
+<div class="mb-4">
+    <p><strong>Tổng số câu hỏi:</strong> @total</p>
+    <p><strong>Số câu trả lời đúng:</strong> @correct</p>
+    <p><strong>Điểm số:</strong> <span style="color: green; font-size: 1.5em;">@score / 10</span></p>
+</div>
+
+<h3>Chi tiết bài làm</h3>
+
+@for (int i = 0; i < questions.Count; i++)
+{
+    var q = questions[i];
+    var userAnswer = form[$"answers[{q.Id}]"];
+    bool isCorrect = userAnswer == q.CorrectOption;
+
+    <div style="margin-bottom: 15px; padding: 15px; border: 1px solid #ccc; border-radius: 8px;">
+        <p><strong>Câu @(@i + 1):</strong> @q.Content</p>
+        <ul style="list-style-type: none; padding-left: 0;">
+            @foreach (var opt in new[] { "A", "B", "C", "D" })
+            {
+                var optText = opt switch
+                {
+                    "A" => q.OptionA,
+                    "B" => q.OptionB,
+                    "C" => q.OptionC,
+                    "D" => q.OptionD,
+                    _ => ""
+                };
+
+                var isUserAnswer = userAnswer == opt;
+                var isCorrectAnswer = q.CorrectOption == opt;
+
+                <li style="@(isUserAnswer ? "font-weight:bold;" : "")">
+                    @opt. @optText
+                    @if (isCorrectAnswer)
+                    {
+                        <span style="color:green">✔</span>
+                    }
+                    @if (isUserAnswer && !isCorrectAnswer)
+                    {
+                        <span style="color:red">✘</span>
+                    }
+                </li>
+            }
+        </ul>
+
+        <p>👉 Bạn chọn: <strong>@(string.IsNullOrEmpty(userAnswer) ? "Không chọn" : userAnswer)</strong></p>
+        <p>
+            Kết quả:
+            @if (isCorrect)
+            {
+                <span style="color: green; font-weight: bold;">✅ Chính xác</span>
+            }
+            else
+            {
+                <span style="color: red; font-weight: bold;">❌ Sai</span>
+            }
+        </p>
+    </div>
+}
+
+<a asp-action="Index" asp-controller="Exam" class="btn btn-primary mt-4">Quay lại danh sách đề thi</a>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Chặn nút back trình duyệt
+        history.pushState(null, '', location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+
+        // Thông báo điểm số bằng popup
+        Swal.fire({
+            title: '🎉 Đã hoàn thành!',
+            html: `Bạn đúng <b>${@correct}</b> / <b>${@total}</b> câu<br>Điểm: <b style="color: green;">${@score}</b> / 10`,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    </script>
+}

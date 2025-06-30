@@ -1,0 +1,115 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using PRN222_EnglishQuiz.Models
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">🎓 Quản lý câu hỏi</h2>
+        <div class="d-flex gap-2">
+            <form asp-action="QuestionManager" asp-controller="Admin" method="get" class="d-flex">
+                <input name="search" class="form-control rounded-start-pill" placeholder="🔍 Tìm theo nội dung..." value="@ViewBag.Search" />
+                <button class="btn btn-outline-primary rounded-end-pill px-4" type="submit">Tìm</button>
+            </form>
+            <button class="btn btn-success rounded-pill px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+                ➕ Thêm câu hỏi
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive shadow-sm rounded-4">
+        <table class="table table-hover table-bordered align-middle text-center table-striped border-primary-subtle">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Đề thi</th>
+                    <th>Nội dung</th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                    <th>Đáp án</th>
+                    <th>Chủ đề</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Question q in ViewBag.Questions)
+                {
+                    <tr>
+                        <td>@q.Id</td>
+                        <td>@q.Exam?.Title</td>
+                        <td class="text-start">@q.Content</td>
+                        <td>@q.OptionA</td>
+                        <td>@q.OptionB</td>
+                        <td>@q.OptionC</td>
+                        <td>@q.OptionD</td>
+                        <td class="fw-bold text-success">@q.CorrectOption</td>
+                        <td>@q.Category</td>
+                        <td>@q.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a class="btn btn-sm btn-outline-warning" asp-action="QuestionDetail" asp-controller="Admin" asp-route-id="@q.Id">✏️</a>
+                                <a class="btn btn-sm btn-outline-danger" href="/Admin/DeleteQuestion/@q.Id" onclick="return confirm('Xóa câu hỏi này?')">🗑️</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal thêm -->
+<div class="modal fade" id="addQuestionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+            <form asp-action="AddQuestion" asp-controller="Admin" method="post">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">➕ Thêm câu hỏi mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label>Đề thi</label>
+                            <select class="form-select" name="ExamId" required>
+                                <option value="">-- Chọn đề thi --</option>
+                                @foreach (Exam exam in ViewBag.Exams)
+                                {
+                                    <option value="@exam.Id">@exam.Title</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Chủ đề</label>
+                            <input type="text" class="form-control" name="Category" />
+                        </div>
+                    </div>
+                    <label>Nội dung</label>
+                    <textarea class="form-control mb-3" name="Content" rows="2" required></textarea>
+                    <div class="row mb-3">
+                        <div class="col"><input class="form-control" name="OptionA" placeholder="A" /></div>
+                        <div class="col"><input class="form-control" name="OptionB" placeholder="B" /></div>
+                        <div class="col"><input class="form-control" name="OptionC" placeholder="C" /></div>
+                        <div class="col"><input class="form-control" name="OptionD" placeholder="D" /></div>
+                    </div>
+                    <label>Đáp án đúng</label>
+                    <select class="form-select" name="CorrectOption" required>
+                        <option value="">-- Chọn đáp án đúng --</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success">Thêm</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

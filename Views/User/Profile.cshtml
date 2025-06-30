@@ -1,0 +1,48 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using PRN222_EnglishQuiz.Models
+
+@model PRN222_EnglishQuiz.Models.User
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg rounded-4">
+                <div class="card-header text-center bg-primary text-white rounded-top-4">
+                    <h3 class="mb-0">Thông tin người dùng</h3>
+                </div>
+                <form asp-action="UpdateProfile" asp-controller="User" method="post">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>ID</strong></label>
+                            <input class="form-control" name="Id" value="@Model?.Id" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>User Name</strong></label>
+                            <input class="form-control" name="UserName" value="@Model?.UserName" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Email</strong></label>
+                            <input class="form-control" name="Email" value="@Model?.Email" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Password</strong></label>
+                            <input class="form-control" name="PasswordHash" value="@Model?.PasswordHash" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Role</strong></label>
+                            <input class="form-control" name="Role" value="@Model?.Role" readonly />
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button asp-action="UpdateProfile" asp-controller="User" type="submit" class="btn btn-success me-2">Update</button>
+                        <a asp-controller="Exam" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

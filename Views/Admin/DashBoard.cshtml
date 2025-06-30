@@ -1,0 +1,18 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using PRN222_EnglishQuiz.Models
+
+@{
+    ViewData["Title"] = "DashBoard";
+}
+
+<table class="table">
+    <tr>
+        <td>Users: @(ViewBag.Users != null ? ViewBag.Users.Count : 0)</td>
+        <td>Exams: @(ViewBag.Exams != null ? ViewBag.Exams.Count : 0)</td>
+        <td>Questions: @(ViewBag.Questions != null ? ViewBag.Questions.Count : 0)</td>
+    </tr>
+</table>
+<a asp-action="UserManagement" asp-controller="Admin">UserManagement</a>
+<a asp-action="ExamManagement" asp-controller="Admin">ExamManagement</a>
+<a asp-action="QuestionManagement" asp-controller="Admin">QuestionManagement</a>
+

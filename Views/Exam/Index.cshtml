@@ -1,0 +1,20 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using PRN222_EnglishQuiz.Models
+
+@{
+    ViewData["Title"] = "Danh sách kỳ thi";
+    var exams = ViewBag.Exams as List<Exam>;
+}
+
+<h2 class="text-center">📚 Danh sách kỳ thi</h2>
+
+<div class="exam-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+    @foreach (Exam e in exams)
+    {
+        <div class="exam-card" style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; background-color: #f9f9f9;">
+            <h3 style="color: #007acc;">@e.Title</h3>
+            <p>@e.Description</p>
+            <a asp-controller="Exam" asp-action="TakeExam" asp-route-id="@e.Id" style="color: white; background-color: #007acc; padding: 8px 12px; border-radius: 5px; text-decoration: none;">Làm bài thi</a>
+        </div>
+    }
+</div>
