@@ -46,8 +46,12 @@ namespace PRN222_EnglishQuiz.Controllers
                 HttpContext.Session.SetString("UserName", checkuser.UserName);
                 HttpContext.Session.SetString("Role", checkuser.Role);
 
-                ViewBag.LoginSuccess = true;
-                return View();
+                TempData["LoginSuccess"] = "??ng nh?p thành công!";
+
+                if (checkuser.Role == "Admin")
+                    return RedirectToAction("DashBoard", "Admin");
+                else
+                    return RedirectToAction("Index", "Exam");
             }
             ViewBag.LoginError = "Email or Password was wrong!";
             return View(user);
