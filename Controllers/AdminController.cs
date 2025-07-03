@@ -58,12 +58,12 @@ namespace PRN222_EnglishQuiz.Controllers
             var selectuser = _context.Users.FirstOrDefault(x=>x.Id == id);
             if (selectuser.Id == adminid)
             {
-                TempData["Error"] = "Bạn không thể xóa chính mình.";
+                TempData["Error"] = "Bạn không thể xóa chính mình";
                 return RedirectToAction("UserManagement");
             }
             if (selectuser.Role == "Admin")
             {
-                TempData["Error"] = "Không thể xóa tài khoản Admin.";
+                TempData["Error"] = "Không thể xóa tài khoản Admin";
                 return RedirectToAction("UserManagement");
             }
             _context.Users.Remove(selectuser);
