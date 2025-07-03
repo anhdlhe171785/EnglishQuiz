@@ -33,7 +33,7 @@ namespace PRN222_EnglishQuiz.Controllers
         {
             if (user != null)
             {
-                TempData["Success"] = "Add User Successfulyy";
+                TempData["Success"] = "Add User Successfulyy.";
                 _context.Users.Add(user);
                 _context.SaveChanges();
             }
