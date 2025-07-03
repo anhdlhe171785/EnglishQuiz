@@ -3,20 +3,6 @@
 
 <div class="container mt-4">
     <h3 class="mb-4">Quản lý người dùng</h3>
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
 
     <!-- Nút Thêm người dùng -->
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">
@@ -43,10 +29,8 @@
                     <td>@u.Role</td>
                     <td>
                         <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#userModal@u.Id">Detail</button>
-                        <form asp-action="DeleteUser" asp-controller="Admin" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
-                            <input type="hidden" name="id" value="@u.Id" />
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+                        <a href="/Admin/DeleteUser/@u.Id" class="btn btn-danger btn-sm">Delete</a>
+
                         <!-- Modal cập nhật -->
                         <div class="modal fade" id="userModal@u.Id" tabindex="-1" aria-labelledby="modalLabel@u.Id" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -64,11 +48,11 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Email</label>
-                                                <input type="email" class="form-control" name="Email" value="@u.Email" readonly/>
+                                                <input type="email" class="form-control" name="Email" value="@u.Email" required />
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Role</label>
-                                                <input type="text" class="form-control" name="Role" value="@u.Role" readonly />
+                                                <input type="text" class="form-control" name="Role" value="@u.Role" required />
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -106,16 +90,12 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" class="form-control" name="PasswordHash" required />
+                        <input type="password" class="form-control" name="Password" required />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Role</label>
-                        <select name="Role" class="form-control" required>
-                            <option value="">-- Chọn vai trò --</option>
-                            <option value="Admin">Admin</option>
-                            <option value="User">User</option>
-                        </select>
-                   </div>
+                        <input type="text" class="form-control" name="Role" required />
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Thêm</button>

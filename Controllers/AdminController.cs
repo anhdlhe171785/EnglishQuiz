@@ -28,50 +28,6 @@ namespace PRN222_EnglishQuiz.Controllers
             ViewBag.Users = users;
             return View();
         }
-        [HttpPost]
-        public IActionResult AddUser(User user)
-        {
-            if (user != null)
-            {
-                TempData["Success"] = "Add User Successfulyy";
-                _context.Users.Add(user);
-                _context.SaveChanges();
-            }
-            return RedirectToAction("UserManagement");
-        }
-        [HttpPost]
-        public IActionResult UpdateUser(User user)
-        {
-            var selectuser = _context.Users.FirstOrDefault(x => x.Id == user.Id);
-            if (user != null)
-            {
-                selectuser.UserName = user.UserName;
-            }
-            _context.Users.Update(selectuser);
-            _context.SaveChanges();
-            return RedirectToAction("UserManagement");
-        }
-        [HttpPost]
-        public IActionResult DeleteUser(int id)
-        {
-            int? adminid = HttpContext.Session.GetInt32("Id");
-            var selectuser = _context.Users.FirstOrDefault(x=>x.Id == id);
-            if (selectuser.Id == adminid)
-            {
-                TempData["Error"] = "Bạn không thể xóa chính mình.";
-                return RedirectToAction("UserManagement");
-            }
-            if (selectuser.Role == "Admin")
-            {
-                TempData["Error"] = "Không thể xóa tài khoản Admin.";
-                return RedirectToAction("UserManagement");
-            }
-            _context.Users.Remove(selectuser);
-            _context.SaveChanges();
-
-            TempData["Success"] = "Xóa người dùng thành công.";
-            return RedirectToAction("UserManagement");
-        }
         public IActionResult ExamManagement()
         {
             var exams = _context.Exams.ToList();

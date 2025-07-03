@@ -45,6 +45,17 @@
                     title: error
                 });
             }
+
+            if (success === 'True') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login successfully!',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = '/Exam/Index'; 
+                });
+            }
         };
     </script>
 }
