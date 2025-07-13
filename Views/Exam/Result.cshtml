@@ -24,7 +24,8 @@
 {
     var q = questions[i];
     var userAnswer = form[$"answers[{q.Id}]"];
-    bool isCorrect = userAnswer == q.CorrectOption;
+    bool isEmpty = string.IsNullOrEmpty(userAnswer);
+    bool isCorrect = (!isEmpty && userAnswer == q.CorrectOption);
 
     <div style="margin-bottom: 15px; padding: 15px; border: 1px solid #ccc; border-radius: 8px;">
         <p><strong>Câu @(@i + 1):</strong> @q.Content</p>
@@ -57,12 +58,21 @@
             }
         </ul>
 
-        <p>👉 Bạn chọn: <strong>@(string.IsNullOrEmpty(userAnswer) ? "Không chọn" : userAnswer)</strong></p>
+        <p>
+            👉 Bạn chọn:
+            <strong>
+                @Html.Raw(isEmpty ? "<span style='color:gray;'>Không chọn</span>" : userAnswer)
+            </strong>
+        </p>
         <p>
             Kết quả:
             @if (isCorrect)
             {
                 <span style="color: green; font-weight: bold;">✅ Chính xác</span>
+            }
+            else if (isEmpty)
+            {
+                <span style="color: orange; font-weight: bold;">⚠️ Bỏ qua</span>
             }
             else
             {

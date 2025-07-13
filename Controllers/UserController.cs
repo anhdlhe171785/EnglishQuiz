@@ -37,21 +37,70 @@ namespace PRN222_EnglishQuiz.Controllers
             _context.SaveChanges();
             return RedirectToAction("Profile");
         }
-        public IActionResult ExamHistory()
+        public IActionResult ExamHistory(int? examId, string sortOrder, DateTime? examDate)
         {
             int? userid = HttpContext.Session.GetInt32("Id");
-            var history = _context.ExamHistories.Include(e => e.Exam)
-                                                .Where(x => x.UserId == userid)
-                                                .ToList();
-            ViewBag.ExamHistory = history;
+
+            var histories = _context.ExamHistories
+                                    .Include(e => e.Exam)
+                                    .Where(x => x.UserId == userid);
+
+            if (examId.HasValue)
+            {
+                histories = histories.Where(h => h.ExamId == examId.Value);
+            }
+
+            // 👉 Lọc theo ngày thi chính xác
+            if (examDate.HasValue)
+            {
+                histories = histories.Where(h => h.DateTaken.HasValue && h.DateTaken.Value.Date == examDate.Value.Date);
+            }
+
+            // Sắp xếp
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.ScoreSortParam = sortOrder == "score_desc" ? "score_asc" : "score_desc";
+            ViewBag.DateSortParam = sortOrder == "date_desc" ? "date_asc" : "date_desc";
+
+            histories = sortOrder switch
+            {
+                "score_asc" => histories.OrderBy(h => h.Score),
+                "score_desc" => histories.OrderByDescending(h => h.Score),
+                "date_asc" => histories.OrderBy(h => h.DateTaken),
+                "date_desc" => histories.OrderByDescending(h => h.DateTaken),
+                _ => histories.OrderByDescending(h => h.DateTaken),
+            };
+
+            ViewBag.ExamHistory = histories.ToList();      // Dữ liệu kết quả
+            ViewBag.ExamList = _context.Exams.ToList();    // Dữ liệu dropdown
+            ViewBag.SelectedExamId = examId;
+            ViewBag.SelectedDate = examDate?.ToString("yyyy-MM-dd");
+
             return View();
         }
+
+
+
         [HttpPost]
         public IActionResult Detail(int id)
         {
+            // id ở đây là ExamHistory.Id
+            var examHistory = _context.ExamHistories
+                .Include(h => h.Exam)
+                .FirstOrDefault(h => h.Id == id);
 
-            return View();
+            if (examHistory == null) return NotFound();
+
+            var userAnswers = _context.UserAnswers
+                .Include(ua => ua.Question)
+                .Where(ua => ua.ExamHistoryId == id)
+                .ToList();
+
+            ViewBag.Exam = examHistory.Exam;
+            ViewBag.UserAnswers = userAnswers;
+            ViewBag.Score = examHistory.Score;
+            ViewBag.DateTaken = examHistory.DateTaken;
+
+            return View("ExamDetail");
         }
-
     }
 }

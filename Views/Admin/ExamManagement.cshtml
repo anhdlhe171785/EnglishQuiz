@@ -1,86 +1,108 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using PRN222_EnglishQuiz.Models
 
-<div class="container mt-4">
-    <h3 class="mb-4">Quản lý bài thi</h3>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-primary mb-1">📝 Quản lý bài thi</h3>
+            <a asp-controller="Admin" asp-action="Dashboard"
+               class="btn btn-light border shadow-sm rounded-pill d-inline-flex align-items-center gap-2 px-3 py-2 mt-1">
+                <i class="bi bi-arrow-left-circle-fill text-primary fs-5"></i>
+                <span class="fw-semibold text-dark">Quay về Dashboard</span>
+            </a>
+        </div>
+        <button class="btn btn-success rounded-pill px-4 py-2 shadow-sm h-100"
+                data-bs-toggle="modal" data-bs-target="#addExamModal">
+            ➕ Thêm bài thi
+        </button>
+    </div>
 
-    <!-- Nút Thêm bài thi -->
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addExamModal">➕ Thêm bài thi</button>
-
-    <table class="table table-bordered table-hover text-center align-middle shadow rounded-4">
-        <thead class="table-primary">
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Created At</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (Exam e in ViewBag.Exams)
-            {
+    <div class="table-responsive shadow-sm rounded-4">
+        <table class="table table-bordered table-hover text-center align-middle table-striped border-primary-subtle">
+            <thead class="table-primary">
                 <tr>
-                    <td>@e.Id</td>
-                    <td>@e.Title</td>
-                    <td>@e.Description</td>
-                    <td>@e.CreatedAt?.ToString("dd/MM/yyyy")</td>
-                    <td>
-                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal@e.Id">Chi tiết</button>
-                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal@e.Id">Sửa</button>
-                        <a href="/Admin/DeleteExam/@e.Id" class="btn btn-danger btn-sm" onclick="return confirm('Xác nhận xóa?');">Xóa</a>
-
-                        <!-- Modal Chi tiết -->
-                        <div class="modal fade" id="detailModal@e.Id" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-info text-white">
-                                        <h5 class="modal-title">Chi tiết bài thi</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body text-start">
-                                        <p><strong>Title:</strong> @e.Title</p>
-                                        <p><strong>Description:</strong> @e.Description</p>
-                                        <p><strong>Created At:</strong> @e.CreatedAt</p>
-                                    </div>
-                                </div>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Exam e in ViewBag.Exams)
+                {
+                    <tr>
+                        <td>@e.Id</td>
+                        <td>@e.Title</td>
+                        <td>@e.Description</td>
+                        <td>@e.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-info btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#detailModal@e.Id">
+                                    Chi tiết
+                                </button>
+                                <button class="btn btn-warning btn-sm"
+                                        data-bs-toggle="modal" data-bs-target="#editModal@e.Id">
+                                    Sửa
+                                </button>
+                                <a href="/Admin/DeleteExam/@e.Id"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Xác nhận xóa?');">Xóa</a>
                             </div>
-                        </div>
 
-                        <!-- Modal Sửa -->
-                        <div class="modal fade" id="editModal@e.Id" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <form asp-action="UpdateExam" asp-controller="Admin" method="post">
-                                        <div class="modal-header bg-warning text-white">
-                                            <h5 class="modal-title">Sửa bài thi</h5>
+                            <!-- Modal Chi tiết -->
+                            <div class="modal fade" id="detailModal@e.Id" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-info text-white">
+                                            <h5 class="modal-title">Chi tiết bài thi</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body text-start">
-                                            <input type="hidden" name="Id" value="@e.Id" />
-                                            <div class="mb-3">
-                                                <label class="form-label">Title</label>
-                                                <input type="text" class="form-control" name="Title" value="@e.Title" required />
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Description</label>
-                                                <textarea class="form-control" name="Description" required>@e.Description</textarea>
-                                            </div>
+                                            <p><strong>Title:</strong> @e.Title</p>
+                                            <p><strong>Description:</strong> @e.Description</p>
+                                            <p><strong>Created At:</strong> @e.CreatedAt?.ToString("dd/MM/yyyy")</p>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-success">Lưu</button>
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                        </div>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                            <!-- Modal Sửa -->
+                            <div class="modal fade" id="editModal@e.Id" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form asp-action="UpdateExam" asp-controller="Admin" method="post">
+                                            <div class="modal-header bg-warning text-white">
+                                                <h5 class="modal-title">Sửa bài thi</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                <input type="hidden" name="Id" value="@e.Id" />
+                                                <div class="mb-3">
+                                                    <label class="form-label">Title</label>
+                                                    <input type="text" class="form-control" name="Title" value="@e.Title" required />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Description</label>
+                                                    <textarea class="form-control" name="Description" required>@e.Description</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-success">Lưu</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Modal Thêm bài thi -->
@@ -111,5 +133,6 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
+<!-- Bootstrap & Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

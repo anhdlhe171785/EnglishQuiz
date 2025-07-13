@@ -6,15 +6,18 @@ namespace PRN222_EnglishQuiz.Controllers
     public class ExamController : Controller
     {
         private readonly EnglishQuizContext _context;
+
         public ExamController(EnglishQuizContext context)
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
             ViewBag.Exams = _context.Exams.ToList();
             return View();
         }
+
         [HttpGet]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult TakeExam(int id)
@@ -23,6 +26,7 @@ namespace PRN222_EnglishQuiz.Controllers
             {
                 return RedirectToAction("Login", "Home");
             }
+
             Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
             Response.Headers["Pragma"] = "no-cache";
             Response.Headers["Expires"] = "0";
@@ -45,6 +49,7 @@ namespace PRN222_EnglishQuiz.Controllers
                             .Where(q => q.ExamId == id)
                             .ToList();
             }
+
             ViewBag.Exam = exam;
             ViewBag.Questions = questions;
             ViewBag.Step = 1;
@@ -52,17 +57,19 @@ namespace PRN222_EnglishQuiz.Controllers
 
             return View();
         }
+
         [HttpPost]
         public IActionResult SubmitExam(IFormCollection form)
         {
             int? id = HttpContext.Session.GetInt32("Id");
+            if (id == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
 
             HttpContext.Session.SetString("AlreadySubmitted", "true");
 
-            // 1. Lấy ID đề thi
             int examId = int.Parse(form["examId"]);
-
-            // 2. Lấy danh sách câu hỏi đã hiển thị
             var questionIds = form["questionIds"].Select(int.Parse).Distinct().ToList();
             var questions = _context.Questions
                                     .Where(q => questionIds.Contains(q.Id))
@@ -71,7 +78,6 @@ namespace PRN222_EnglishQuiz.Controllers
             int total = questions.Count;
             int correctCount = 0;
 
-            // 3. Duyệt từng câu hỏi để chấm điểm
             foreach (var question in questions)
             {
                 string userAnswer = form[$"answers[{question.Id}]"];
@@ -81,29 +87,27 @@ namespace PRN222_EnglishQuiz.Controllers
                 }
             }
 
-            ViewBag.Questions = questions;
-            ViewBag.UserAnswers = form; // hoặc lưu tạm vào Dictionary nếu cần
-
-            // 4. Tính điểm
             double score = (double)correctCount / total * 10;
 
-            // 5. Truyền sang view kết quả
+            // Truyền sang View
+            ViewBag.Questions = questions;
+            ViewBag.UserAnswers = form;
             ViewBag.Total = total;
             ViewBag.Correct = correctCount;
             ViewBag.Score = Math.Round(score, 2);
 
-            // 6. Lưu lịch sử làm bài vào bảng ExamHistory
+            // Ghi vào ExamHistories
             var examHistory = new ExamHistory
             {
-                UserId = id.Value, // id lấy từ Session, là ID người dùng
-                ExamId = examId, // luôn có giá trị, kể cả khi là đề ngẫu nhiên
-                Score = (int)Math.Round(score), // vì Score trong model là int?
+                UserId = id.Value,
+                ExamId = examId,
+                Score = (int)Math.Round(score),
                 DateTaken = DateTime.Now
             };
             _context.ExamHistories.Add(examHistory);
-            _context.SaveChanges(); // Lưu để có Id của examHistory
+            _context.SaveChanges();
 
-            // 7. Lưu từng câu trả lời vào bảng UserAnswers
+            // Ghi từng câu trả lời vào UserAnswers
             foreach (var question in questions)
             {
                 string userAnswer = form[$"answers[{question.Id}]"];
@@ -112,11 +116,12 @@ namespace PRN222_EnglishQuiz.Controllers
                 {
                     ExamHistoryId = examHistory.Id,
                     QuestionId = question.Id,
-                    SelectedOption = userAnswer ?? ""
+                    SelectedOption = string.IsNullOrEmpty(userAnswer) ? "X" : userAnswer
                 };
 
                 _context.UserAnswers.Add(userAnswerEntity);
             }
+
             _context.SaveChanges();
 
             return View("Result");
@@ -126,6 +131,5 @@ namespace PRN222_EnglishQuiz.Controllers
         {
             return View();
         }
-
     }
 }

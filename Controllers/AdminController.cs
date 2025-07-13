@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PRN222_EnglishQuiz.Models;
+using System.Linq;
 
 namespace PRN222_EnglishQuiz.Controllers
 {
@@ -55,23 +56,49 @@ namespace PRN222_EnglishQuiz.Controllers
         public IActionResult DeleteUser(int id)
         {
             int? adminid = HttpContext.Session.GetInt32("Id");
-            var selectuser = _context.Users.FirstOrDefault(x=>x.Id == id);
-            if (selectuser.Id == adminid)
+            var selectuser = _context.Users.FirstOrDefault(x => x.Id == id);
+
+            if (selectuser == null)
             {
-                TempData["Error"] = "Bạn không thể xóa chính mình";
+                TempData["Error"] = "Người dùng không tồn tại.";
                 return RedirectToAction("UserManagement");
             }
+
+            if (adminid != null && selectuser.Id == adminid.Value)
+            {
+                TempData["Error"] = "Bạn không thể xóa chính mình.";
+                return RedirectToAction("UserManagement");
+            }
+
             if (selectuser.Role == "Admin")
             {
-                TempData["Error"] = "Không thể xóa tài khoản Admin";
+                TempData["Error"] = "Không thể xóa tài khoản Admin.";
                 return RedirectToAction("UserManagement");
             }
+
+            // Xóa liên quan
+            var histories = _context.ExamHistories
+                                    .Where(h => h.UserId == id)
+                                    .ToList();
+
+            var historyIds = histories.Select(h => h.Id).ToList();
+
+            var answers = _context.UserAnswers
+                                  .Where(a => historyIds.Contains(a.ExamHistoryId.Value))
+                                  .ToList();
+
+            _context.UserAnswers.RemoveRange(answers);
+            _context.ExamHistories.RemoveRange(histories);
             _context.Users.Remove(selectuser);
+
             _context.SaveChanges();
+
 
             TempData["Success"] = "Xóa người dùng thành công.";
             return RedirectToAction("UserManagement");
         }
+
+
         public IActionResult ExamManagement()
         {
             var exams = _context.Exams.ToList();

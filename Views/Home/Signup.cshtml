@@ -1,5 +1,4 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
 @model PRN222_EnglishQuiz.Models.User
 
 @{
@@ -8,13 +7,13 @@
 
 <div class="row justify-content-center">
     <div class="col-md-5">
-        <h2 class="text-center mb-4">SignUp</h2>
+        <h2 class="text-center mb-4">Sign Up</h2>
 
-        <form asp-action="Signup" method="post">
+        <form asp-controller="Home" asp-action="Signup" method="post">
             <div class="form-group mb-3">
-                <label asp-for="UserName" class="form-label">Email</label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
@@ -45,3 +44,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
