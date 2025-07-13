@@ -1,0 +1,29 @@
+﻿@model PRN222_EnglishQuiz.Models.Exam
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<div class="container mt-5">
+    <h2 class="mb-4">✏️ Edit Exam</h2>
+
+    <form asp-action="UpdateExam" method="post">
+        <input type="hidden" name="Id" value="@ViewBag.Exam.Id" />
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" name="Title" value="@ViewBag.Exam.Title" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="Description" required>@ViewBag.Exam.Description</textarea>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="IsVisible" name="IsVisible" value="true"
+            @(ViewBag.Exam.IsVisible ? "checked" : "") />
+            <label class="form-check-label" for="IsVisible">Visible</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="ExamManagement" asp-controller="Admin" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

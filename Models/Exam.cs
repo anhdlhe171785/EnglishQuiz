@@ -15,6 +15,8 @@ public partial class Exam
 
     public DateTime? CreatedAt { get; set; }
 
+    public bool IsVisible { get; set; }
+
     public virtual ICollection<ExamHistory> ExamHistories { get; set; } = new List<ExamHistory>();
 
     public virtual ICollection<Question> Questions { get; set; } = new List<Question>();

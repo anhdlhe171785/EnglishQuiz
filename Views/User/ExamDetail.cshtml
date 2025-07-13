@@ -1,0 +1,81 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using PRN222_EnglishQuiz.Models
+
+@{
+    ViewData["Title"] = "Exam Detail";
+    var userAnswers = ViewBag.UserAnswers as List<UserAnswer>;
+    var exam = ViewBag.Exam as Exam;
+    var score = ViewBag.Score;
+    var dateTaken = (DateTime)ViewBag.DateTaken;
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="text-primary fw-bold">🧐 Exam Detail: @exam.Title</h2>
+        <p class="text-muted">@exam.Description</p>
+        <p><strong>Score:</strong> <span class="badge bg-success">@score</span></p>
+        <p><strong>Date Taken:</strong> @dateTaken.ToString("dd/MM/yyyy HH:mm")</p>
+    </div>
+
+    @foreach (var ua in userAnswers)
+    {
+        var q = ua.Question;
+        bool isSkipped = ua.SelectedOption == "X";
+
+        <div class="mb-4 border rounded p-3 shadow-sm">
+            <p><strong>Question:</strong> @q.Content</p>
+
+            <ul style="list-style-type: none; padding-left: 0;">
+                @foreach (var opt in new[] { "A", "B", "C", "D", "E" })
+                {
+                    var optText = opt switch
+                    {
+                        "A" => q.OptionA,
+                        "B" => q.OptionB,
+                        "C" => q.OptionC,
+                        "D" => q.OptionD,
+                        "E" => q.OptionE,
+                        _ => ""
+                    };
+                    if (string.IsNullOrWhiteSpace(optText))
+                    {
+                        continue;
+                    }
+
+
+                    bool isCorrect = opt == q.CorrectOption;
+                    bool isUserChoice = !isSkipped && opt == ua.SelectedOption;
+
+                    <li class="@(isUserChoice ? "fw-bold" : "") @(isCorrect ? "text-success" : "")">
+                        @opt. @optText
+                        @if (isCorrect)
+                        {
+                            <span class="text-success ms-2">✔</span>
+                        }
+                        @if (isUserChoice && !isCorrect)
+                        {
+                            <span class="text-danger ms-2">✘</span>
+                        }
+                    </li>
+                }
+            </ul>
+
+            <p>✅ <strong>Correct Answer:</strong> @q.CorrectOption</p>
+            <p>
+                📝 <strong>Your Answer:</strong>
+                @if (isSkipped)
+                {
+                    <span class="text-muted fst-italic">Not Answered</span>
+                }
+                else
+                {
+                    <strong>@ua.SelectedOption</strong>
+                }
+            </p>
+        </div>
+    }
+
+    <div class="text-center mt-4">
+        <a class="btn btn-secondary" asp-action="ExamHistory" asp-controller="User">← Back to History</a>
+    </div>
+</div>

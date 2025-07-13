@@ -1,34 +1,64 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using PRN222_EnglishQuiz.Models
 
+@{
+    ViewData["Title"] = "Take Exam";
+}
 
-<h2>Bắt đầu làm bài: @ViewBag.Exam.Title</h2>
-<p>@ViewBag.Exam.Description</p>
-<p>Thời gian làm bài: @ViewBag.TimeLimitMinutes phút</p>
+<div class="container mt-5">
+    <div class="mb-4 text-center">
+        <h2 class="text-primary fw-bold">📝 @ViewBag.Exam.Title</h2>
+        <p class="text-muted">@ViewBag.Exam.Description</p>
+        <p class="fw-semibold">⏰ Exam Time: @ViewBag.TimeLimitMinutes minutes</p>
+    </div>
 
-<form method="post" asp-action="SubmitExam" asp-controller="Exam">
-    @for (int i = 0; i < ViewBag.Questions.Count; i++)
+    @if (TempData["Error"] != null)
     {
-        var q = ViewBag.Questions[i];
-        <div>
-            <p><strong>@(i + 1).</strong> @q.Content</p>
-            <input type="radio" name="answers[@q.Id]" value="A" /> @q.OptionA<br />
-            <input type="radio" name="answers[@q.Id]" value="B" /> @q.OptionB<br />
-            <input type="radio" name="answers[@q.Id]" value="C" /> @q.OptionC<br />
-            <input type="radio" name="answers[@q.Id]" value="D" /> @q.OptionD<br />
-        </div>
-        <input type="hidden" name="questionIds" value="@q.Id" />
-        <hr />
+        <div class="alert alert-danger text-center">@TempData["Error"]</div>
     }
 
-    <input type="hidden" name="examId" value="@ViewBag.Exam.Id" />
-    <button type="submit">Submit</button>
-</form>
+    <form method="post" asp-action="SubmitExam" asp-controller="Exam"
+          class="card shadow-lg p-4 rounded-4"
+          onsubmit="return confirmSubmit();">
+
+        @for (int i = 0; i < ViewBag.Questions.Count; i++)
+        {
+            var q = ViewBag.Questions[i];
+            var shuffled = ((Dictionary<int, List<(string, string)>>)ViewBag.ShuffledAnswers)[q.Id];
+
+            <div class="mb-4">
+                <p><strong>Question @(i + 1):</strong> @q.Content</p>
+
+                @foreach (var opt in shuffled)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="answers[@q.Id]" value="@opt.Item1" />
+                        <label class="form-check-label">@opt.Item1. @opt.Item2</label>
+                    </div>
+                }
+            </div>
+
+            <input type="hidden" name="questionIds" value="@q.Id" />
+            <hr />
+        }
+
+        <input type="hidden" name="examId" value="@ViewBag.Exam.Id" />
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow">
+                ✅ Submit Answer
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Countdown Timer -->
 <div id="countdown-popup"
      style="position: fixed; top: 20px; right: 20px; background-color: rgba(0,0,0,0.85); color: white;
             padding: 12px 20px; border-radius: 10px; z-index: 9999; font-size: 16px; font-weight: bold;">
     ⏰ Đang tính thời gian...
 </div>
+
 @section Scripts {
     <script>
         let timeLeft = @ViewBag.TimeLimitMinutes * 60;
@@ -37,13 +67,13 @@
         const timer = setInterval(function () {
             let minutes = Math.floor(timeLeft / 60);
             let seconds = timeLeft % 60;
-            countdownPopup.innerText = `⏳ Còn lại: ${minutes} phút ${seconds < 10 ? '0' : ''}${seconds} giây`;
+            countdownPopup.innerText = `⏳ Time left: ${minutes} minute(s) ${seconds < 10 ? '0' : ''}${seconds} second(s)`;
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                countdownPopup.innerText = "🛑 Hết giờ!";
+                countdownPopup.innerText = "🛑 Time's up!";
                 setTimeout(() => {
-                    alert("⏰ Hết giờ! Bài sẽ được tự động nộp.");
+                    alert("⏰ Time's up! Your test will be submitted automatically.");
                     document.querySelector("form").submit();
                 }, 1000);
             }
@@ -54,14 +84,12 @@
         // 🚫 Chặn nút quay lại (Back)
         history.pushState(null, "", location.href);
         window.onpopstate = function () {
-            history.go(1); // Tự tiến lại nếu user bấm back
-        };
-                // Cảnh báo khi người dùng cố gắng rời trang làm bài
-        window.onbeforeunload = function () {
-            return "Bạn có chắc muốn rời trang? Bài làm của bạn sẽ bị mất.";
+            history.go(1);
         };
 
+        // ✅ Xác nhận trước khi nộp bài
+        function confirmSubmit() {
+            return confirm("📋 Are you sure you want to submit the exam?");
+        }
     </script>
 }
-
-

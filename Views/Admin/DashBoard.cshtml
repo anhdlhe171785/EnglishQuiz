@@ -2,22 +2,96 @@
 @using PRN222_EnglishQuiz.Models
 
 @{
-    ViewData["Title"] = "DashBoard";
+    ViewData["Title"] = "Dashboard";
+}
+@{
+    var stats = ViewBag.ExamStats as IEnumerable<dynamic>;
+
+    var examTitles = stats.Select(s => (string)s.ExamTitle).ToList();
+    var examCounts = stats.Select(s => (int)s.Count).ToList();
+    var avgScores = stats.Select(s => (double)s.AvgScore).ToList();
 }
 
-<table class="table">
-    <tr>
-        <td>Users: @(ViewBag.Users != null ? ViewBag.Users.Count : 0)</td>
-        <td>Exams: @(ViewBag.Exams != null ? ViewBag.Exams.Count : 0)</td>
-        <td>Questions: @(ViewBag.Questions != null ? ViewBag.Questions.Count : 0)</td>
-    </tr>
-</table>
-<a asp-action="UserManagement" asp-controller="Admin">UserManagement</a>
-<a asp-action="ExamManagement" asp-controller="Admin">ExamManagement</a>
-<a asp-action="QuestionManagement" asp-controller="Admin">QuestionManagement</a>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .card-soft-blue {
+        background-color: #e7f1ff;
+        color: #004085;
+    }
+
+    .card-soft-green {
+        background-color: #e6f4ea;
+        color: #155724;
+    }
+
+    .card-soft-yellow {
+        background-color: #fff9e6;
+        color: #856404;
+    }
+
+    .card-body i {
+        font-size: 30px;
+        margin-bottom: 10px;
+        display: block;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Admin Dashboard</h2>
+
+    <div class="row text-center">
+        <div class="col-md-4 mb-3">
+            <div class="card card-soft-blue shadow-sm rounded">
+                <div class="card-body">
+                    <i class="bi bi-people-fill"></i>
+                    <h5 class="card-title">Users</h5>
+                    <p class="card-text fs-3 fw-bold">@((ViewBag.Users != null) ? ViewBag.Users.Count : 0)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-soft-green shadow-sm rounded">
+                <div class="card-body">
+                    <i class="bi bi-journal-text"></i>
+                    <h5 class="card-title">Exams</h5>
+                    <p class="card-text fs-3 fw-bold">@((ViewBag.Exams != null) ? ViewBag.Exams.Count : 0)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-soft-yellow shadow-sm rounded">
+                <div class="card-body">
+                    <i class="bi bi-patch-question-fill"></i>
+                    <h5 class="card-title">Questions</h5>
+                    <p class="card-text fs-3 fw-bold">@((ViewBag.Questions != null) ? ViewBag.Questions.Count : 0)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h4 class="text-center">📊 Exam Statistics</h4>
+        <canvas id="examChart" height="100"></canvas>
+    </div>
+
+    @if (ViewBag.TopUser != null)
+    {
+        <div class="alert alert-info text-center mt-4">
+            🏆 <strong>Top Performer:</strong> @ViewBag.TopUser.UserName with score @ViewBag.TopUser.Score in "@ViewBag.TopUser.Title"
+        </div>
+    }
+
+    <div class="mt-4 text-center">
+        <a asp-action="UserManagement" asp-controller="Admin" class="btn btn-outline-primary m-2 px-4">Manage Users</a>
+        <a asp-action="ExamManagement" asp-controller="Admin" class="btn btn-outline-success m-2 px-4">Manage Exams</a>
+        <a asp-action="QuestionManagement" asp-controller="Admin" class="btn btn-outline-warning m-2 px-4">Manage Questions</a>
+    </div>
+</div>
+
 @if (TempData["LoginSuccess"] != null)
 {
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         Swal.fire({
             icon: 'success',
@@ -27,3 +101,44 @@
         });
     </script>
 }
+
+<!-- Bootstrap Icons CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('examChart').getContext('2d');
+
+    const examTitles = @Html.Raw(Json.Serialize(examTitles));
+    const examCounts = @Html.Raw(Json.Serialize(examCounts));
+    const avgScores = @Html.Raw(Json.Serialize(avgScores));
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: examTitles,
+            datasets: [
+                {
+                    label: 'Number of Participants',
+                    data: examCounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                },
+                {
+                    label: 'Average Score',
+                    data: avgScores,
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: {
+                    display: true,
+                    text: 'Participants and Average Scores per Exam'
+                }
+            }
+        }
+    });
+</script>
+

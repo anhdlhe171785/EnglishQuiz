@@ -12,7 +12,7 @@
         <div class="col-md-8">
             <div class="card shadow-lg rounded-4">
                 <div class="card-header text-center bg-primary text-white rounded-top-4">
-                    <h3 class="mb-0">Thông tin người dùng</h3>
+                    <h3 class="mb-0">User Information</h3>
                 </div>
                 <form asp-action="UpdateProfile" asp-controller="User" method="post">
                     <div class="card-body p-4">
@@ -20,29 +20,70 @@
                             <label class="form-label"><strong>ID</strong></label>
                             <input class="form-control" name="Id" value="@Model?.Id" readonly />
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label"><strong>User Name</strong></label>
                             <input class="form-control" name="UserName" value="@Model?.UserName" />
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label"><strong>Email</strong></label>
                             <input class="form-control" name="Email" value="@Model?.Email" readonly />
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label"><strong>Password</strong></label>
-                            <input class="form-control" name="PasswordHash" value="@Model?.PasswordHash" />
+                            <div class="input-group">
+                                <input class="form-control" name="PasswordHash" id="passwordInput" type="password" value="@Model?.PasswordHash" />
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                                    <i class="bi bi-eye-slash" id="eyeIcon"></i>
+                                </button>
+                            </div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label"><strong>Role</strong></label>
                             <input class="form-control" name="Role" value="@Model?.Role" readonly />
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Address</strong></label>
+                            <input class="form-control" name="Address" value="@Model?.Address" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Phone</strong></label>
+                            <input class="form-control" name="Phone" value="@Model?.Phone" />
+                        </div>
                     </div>
+
                     <div class="card-footer text-center">
-                        <button asp-action="UpdateProfile" asp-controller="User" type="submit" class="btn btn-success me-2">Update</button>
-                        <a asp-controller="Exam" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success me-2">Update</button>
+                        <a asp-action="CancelRedirect" asp-controller="User" asp-route-role="@Model?.Role" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+<!-- Script toggle password visibility -->
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('passwordInput');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.remove('bi-eye-slash');
+            eyeIcon.classList.add('bi-eye');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.remove('bi-eye');
+            eyeIcon.classList.add('bi-eye-slash');
+        }
+    }
+</script>

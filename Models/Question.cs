@@ -11,19 +11,21 @@ public partial class Question
 
     public string Content { get; set; } = null!;
 
-    public string OptionA { get; set; } = null!;
+    public string? OptionA { get; set; }
 
-    public string OptionB { get; set; } = null!;
+    public string? OptionB { get; set; }
 
-    public string OptionC { get; set; } = null!;
+    public string? OptionC { get; set; }
 
-    public string OptionD { get; set; } = null!;
+    public string? OptionD { get; set; }
 
     public string CorrectOption { get; set; } = null!;
 
     public string? Category { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+
+    public string? OptionE { get; set; }
 
     public virtual Exam? Exam { get; set; }
 

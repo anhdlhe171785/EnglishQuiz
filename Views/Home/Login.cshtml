@@ -49,4 +49,9 @@
     </script>
 }
 
-
+@if (TempData["SignupSuccess"] != null)
+{
+    <div class="alert alert-success text-center">
+        @TempData["SignupSuccess"]
+    </div>
+}

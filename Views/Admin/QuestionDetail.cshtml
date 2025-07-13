@@ -1,61 +1,69 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using PRN222_EnglishQuiz.Models
 @{
-    ViewData["Title"] = "Chi tiết câu hỏi";
+    ViewData["Title"] = "Question Details";
 }
 
 <div class="container mt-5">
-    <h2 class="fw-bold text-primary mb-4">✏️ Chỉnh sửa câu hỏi</h2>
+    <h2 class="fw-bold text-primary mb-4">✏️ Edit Question</h2>
 
     <form asp-action="UpdateQuestion" asp-controller="Admin" method="post">
         <input type="hidden" name="Id" value="@ViewBag.QuestionDetail.Id" />
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <label class="form-label">Đề thi</label>
-                <select class="form-select" name="ExamId" required>
+                <label class="form-label">Exam</label>
+                <select class="form-select" name="ExamId" >
+                    <option value="" selected>None</option>
                     @foreach (Exam e in ViewBag.Exams)
                     {
-                        <option value="@e.Id" selected="@(e.Id == ViewBag.QuestionDetail.ExamId)">
-                            @e.Title
-                        </option>
+                        if (e.Id != 1)
+                        {
+                            <option value="@e.Id" selected="@(e.Id == ViewBag.QuestionDetail.ExamId)">
+                                @e.Title
+                            </option>
+                        }
                     }
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Chủ đề</label>
+                <label class="form-label">Category</label>
                 <input type="text" class="form-control" name="Category" value="@ViewBag.QuestionDetail.Category" />
             </div>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Nội dung</label>
+            <label class="form-label">Content</label>
             <textarea class="form-control" name="Content" rows="3" required>@ViewBag.QuestionDetail.Content</textarea>
         </div>
 
         <div class="row mb-3">
             <div class="col">
                 <label class="form-label">A</label>
-                <input class="form-control" name="OptionA" value="@ViewBag.QuestionDetail.OptionA" required />
+                <input class="form-control" name="OptionA" value="@ViewBag.QuestionDetail.OptionA"  />
             </div>
             <div class="col">
                 <label class="form-label">B</label>
-                <input class="form-control" name="OptionB" value="@ViewBag.QuestionDetail.OptionB" required />
+                <input class="form-control" name="OptionB" value="@ViewBag.QuestionDetail.OptionB"  />
             </div>
             <div class="col">
                 <label class="form-label">C</label>
-                <input class="form-control" name="OptionC" value="@ViewBag.QuestionDetail.OptionC" required />
+                <input class="form-control" name="OptionC" value="@ViewBag.QuestionDetail.OptionC"  />
             </div>
             <div class="col">
                 <label class="form-label">D</label>
-                <input class="form-control" name="OptionD" value="@ViewBag.QuestionDetail.OptionD" required />
+                <input class="form-control" name="OptionD" value="@ViewBag.QuestionDetail.OptionD"  />
+            </div>
+            <div class="col">
+                <label class="form-label">E</label>
+                <input class="form-control" name="OptionE" value="@ViewBag.QuestionDetail.OptionE" />
             </div>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Đáp án đúng</label>
+            <label class="form-label">CorrectOption</label>
             <select class="form-select" name="CorrectOption" required>
-                @foreach (var opt in new[] { "A", "B", "C", "D" })
+                @foreach (var opt in new[] { "A", "B", "C", "D", "E" })
                 {
                     <option value="@opt" selected="@(ViewBag.QuestionDetail.CorrectOption == opt)">@opt</option>
                 }
@@ -63,8 +71,8 @@
         </div>
 
         <div class="mt-4 d-flex gap-3">
-            <button type="submit" class="btn btn-success">💾 Lưu thay đổi</button>
-            <a asp-action="QuestionManager" asp-controller="Admin" class="btn btn-secondary">⬅️ Quay lại</a>
+            <button type="submit" class="btn btn-success">💾 Save changes</button>
+            <a asp-action="QuestionManagement" asp-controller="Admin" class="btn btn-secondary">⬅️ Return</a>
         </div>
     </form>
 </div>

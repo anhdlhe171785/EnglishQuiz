@@ -8,9 +8,45 @@
 
 <div class="container mt-5">
     <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary">📚 Lịch sử làm bài thi</h2>
-        <p class="text-muted">Xem lại những bài thi bạn đã hoàn thành</p>
+        <h2 class="fw-bold text-primary">📚 Exam History</h2>
+        <p class="text-muted">Review the exams you have completed</p>
     </div>
+
+    <form method="get" asp-action="ExamHistory" asp-controller="User" class="row mb-4 g-2">
+        <div class="col-md-4">
+            <select name="examId" class="form-select" onchange="this.form.submit()">
+                <option value="">-- All Exams --</option>
+                @foreach (var e in (List<Exam>)ViewBag.ExamList)
+                {
+                    <option value="@e.Id" selected="@(ViewBag.SelectedExamId == e.Id ? "selected" : null)">
+                        @e.Title
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <input type="date" name="examDate" class="form-control"
+                   value="@ViewBag.SelectedDate" onchange="this.form.submit()" />
+        </div>
+
+        <div class="col-md-4 text-end">
+            <a asp-action="ExamHistory"
+               asp-route-examId="@ViewBag.SelectedExamId"
+               asp-route-examDate="@ViewBag.SelectedDate"
+               asp-route-sortOrder="@ViewBag.ScoreSortParam"
+               class="btn btn-outline-secondary me-2">
+                Score @(ViewBag.CurrentSort == "score_desc" ? "⬇️" : "⬆️")
+            </a>
+            <a asp-action="ExamHistory"
+               asp-route-examId="@ViewBag.SelectedExamId"
+               asp-route-examDate="@ViewBag.SelectedDate"
+               asp-route-sortOrder="@ViewBag.DateSortParam"
+               class="btn btn-outline-secondary">
+                Date @(ViewBag.CurrentSort == "date_desc" ? "⬇️" : "⬆️")
+            </a>
+        </div>
+    </form>
 
     @if (history != null && history.Any())
     {
@@ -26,17 +62,17 @@
                             <p class="text-muted">@e.Exam?.Description</p>
 
                             <ul class="list-unstyled mt-3 mb-0">
-                                <li><strong>Điểm:</strong> <span class="badge bg-info text-dark">@e.Score</span></li>
-                                <li><strong>Ngày thi:</strong> <span class="text-secondary">@e.DateTaken?.ToString("dd/MM/yyyy")</span></li>
+                                <li><strong>Score:</strong> <span class="badge bg-info text-dark">@e.Score</span></li>
+                                <li><strong>Date Taken:</strong> <span class="text-secondary">@e.DateTaken?.ToString("dd/MM/yyyy")</span></li>
                             </ul>
                         </div>
                         <div class="card-footer bg-transparent border-0 d-flex justify-content-between align-items-center">
                             <i class="bi bi-clock-history text-secondary"></i>
 
-                            <form asp-controller="Exam" asp-action="Detail" method="post">
+                            <form asp-controller="User" asp-action="Detail" method="post">
                                 <input type="hidden" name="id" value="@e.Id" />
                                 <button type="submit" class="btn btn-sm btn-outline-primary">
-                                    Xem chi tiết
+                                    View Details
                                 </button>
                             </form>
                         </div>
@@ -48,7 +84,7 @@
     else
     {
         <div class="alert alert-warning text-center mt-5">
-            <i class="bi bi-info-circle-fill me-2"></i> Bạn chưa có lịch sử làm bài nào.
+            <i class="bi bi-info-circle-fill me-2"></i> You have no exam history yet.
         </div>
     }
 </div>
