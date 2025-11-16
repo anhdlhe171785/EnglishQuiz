@@ -11,6 +11,42 @@
         <h2 class="fw-bold text-primary">📚 Exam History</h2>
         <p class="text-muted">Review the exams you have completed</p>
     </div>
+<form method="get" asp-action="ExamHistory" asp-controller="User" class="row mb-4 g-2">
+    <div class="col-md-4">
+        <select name="examId" class="form-select" onchange="this.form.submit()">
+            <option value="">-- Tất cả bài thi --</option>
+            @foreach (var e in (List<Exam>)ViewBag.ExamList)
+            {
+               <option value="@e.Id" selected="@(ViewBag.SelectedExamId == e.Id ? "selected" : null)">
+                        @e.Title
+               </option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <input type="date" name="examDate" class="form-control"
+               value="@ViewBag.SelectedDate" onchange="this.form.submit()" />
+    </div>
+
+    <div class="col-md-4 text-end">
+        <a asp-action="ExamHistory"
+           asp-route-examId="@ViewBag.SelectedExamId"
+           asp-route-examDate="@ViewBag.SelectedDate"
+           asp-route-sortOrder="@ViewBag.ScoreSortParam"
+           class="btn btn-outline-secondary me-2">
+            Điểm @(ViewBag.CurrentSort == "score_desc" ? "⬇️" : "⬆️")
+        </a>
+        <a asp-action="ExamHistory"
+           asp-route-examId="@ViewBag.SelectedExamId"
+           asp-route-examDate="@ViewBag.SelectedDate"
+           asp-route-sortOrder="@ViewBag.DateSortParam"
+           class="btn btn-outline-secondary">
+            Ngày @(ViewBag.CurrentSort == "date_desc" ? "⬇️" : "⬆️")
+        </a>
+    </div>
+</form>
+
 
     <form method="get" asp-action="ExamHistory" asp-controller="User" class="row mb-4 g-2">
         <div class="col-md-4">

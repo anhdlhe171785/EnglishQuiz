@@ -7,7 +7,6 @@ namespace PRN222_EnglishQuiz.Models;
 public partial class User
 {
     public int Id { get; set; }
-
     public string UserName { get; set; } = null!;
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email address")]
