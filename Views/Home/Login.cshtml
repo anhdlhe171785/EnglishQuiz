@@ -28,6 +28,9 @@
             <div class="text-center mt-3">
                 <p>Don't have an account? <a asp-controller="Home" asp-action="Signup">Sign Up</a></p>
             </div>
+            <div class="text-center mt-3">
+                <a asp-action="ForgotPassword" asp-controller="Home">Forgot Password?</a>
+            </div>
         </form>
     </div>
 </div>
@@ -55,3 +58,4 @@
         @TempData["SignupSuccess"]
     </div>
 }
+

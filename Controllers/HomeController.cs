@@ -89,5 +89,38 @@ namespace PRN222_EnglishQuiz.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(string email, string phone, string newPassword, string confirmPassword)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Phone == phone);
+            if (user == null)
+            {
+                ViewBag.Error = "Email or phone number is incorrect!";
+                return View();
+            }
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+            {
+                ViewBag.Error = "New password must have at least 6 characters!";
+                return View();
+            }
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "Confirm Password is wrong!";
+                return View();
+            }
+
+            user.PasswordHash = newPassword;
+            _context.SaveChanges();
+
+            TempData["Success"] = "Password changed successfully! Please log in again.";
+            return View();
+        }
     }
 }
